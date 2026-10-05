@@ -195,6 +195,9 @@
               <inputExclude>src/test/resources/org/apache/commons/csv/CSVFileParser/testCSV246_checkWithNoComment.txt</inputExclude>
               <inputExclude>src/test/resources/org/apache/commons/csv/CSV-290/psql.csv</inputExclude>
               <inputExclude>src/test/resources/org/apache/commons/csv/CSV-290/psql.tsv</inputExclude>
+              <!-- Approved Scenarios fixtures for the "required headers" feature: these *.approved.md files are both the
+                   product-manager-readable spec and the test input/expected-output data, not licensable source code. -->
+              <inputExclude>src/test/resources/org/apache/commons/csv/requiredheaders/**/*.approved.md</inputExclude>
             </inputExcludes>
           </configuration>
         </plugin>

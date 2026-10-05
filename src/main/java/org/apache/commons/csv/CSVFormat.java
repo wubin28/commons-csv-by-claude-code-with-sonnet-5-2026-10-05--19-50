@@ -264,6 +264,8 @@ public final class CSVFormat implements Serializable {
 
         private String recordSeparator;
 
+        private String[] requiredHeaders;
+
         private boolean skipHeaderRecord;
 
         private boolean lenientEof;
@@ -300,6 +302,7 @@ public final class CSVFormat implements Serializable {
             this.quoteMode = csvFormat.quoteMode;
             this.quotedNullString = csvFormat.quotedNullString;
             this.recordSeparator = csvFormat.recordSeparator;
+            this.requiredHeaders = csvFormat.requiredHeaders;
             this.skipHeaderRecord = csvFormat.skipHeaderRecord;
             this.trailingData = csvFormat.trailingData;
             this.trailingDelimiter = csvFormat.trailingDelimiter;
@@ -860,6 +863,23 @@ public final class CSVFormat implements Serializable {
          */
         public Builder setRecordSeparator(final String recordSeparator) {
             this.recordSeparator = recordSeparator;
+            return this;
+        }
+
+        /**
+         * Sets the header names that must be present in the parsed header record, use no arguments to disable.
+         *
+         * <p>
+         * Requires {@link #setHeader} to be set; the header names given here are checked against the parser's header map (see
+         * {@link CSVParser#getHeaderMap()}) as soon as the header is read, before any {@link CSVRecord} is returned.
+         * </p>
+         *
+         * @param requiredHeaders The header names that must be present, use no arguments to disable.
+         * @return This instance.
+         * @since 1.15.0
+         */
+        public Builder setRequiredHeaders(final String... requiredHeaders) {
+            this.requiredHeaders = CSVFormat.clone(requiredHeaders);
             return this;
         }
 
@@ -1630,6 +1650,9 @@ public final class CSVFormat implements Serializable {
     /** For output. */
     private final String recordSeparator;
 
+    /** Header names that must be present in the parsed header record, or {@code null}/empty if not required. */
+    private final String[] requiredHeaders;
+
     /** Whether to skip the header record. */
     private final boolean skipHeaderRecord;
 
@@ -1669,6 +1692,7 @@ public final class CSVFormat implements Serializable {
         this.quoteMode = builder.quoteMode;
         this.quotedNullString = builder.quotedNullString;
         this.recordSeparator = builder.recordSeparator;
+        this.requiredHeaders = builder.requiredHeaders;
         this.skipHeaderRecord = builder.skipHeaderRecord;
         this.trailingData = builder.trailingData;
         this.trailingDelimiter = builder.trailingDelimiter;
@@ -2026,6 +2050,16 @@ public final class CSVFormat implements Serializable {
      */
     public String getRecordSeparator() {
         return recordSeparator;
+    }
+
+    /**
+     * Gets a copy of the required header names array.
+     *
+     * @return A copy of the required header names array; {@code null} if not set.
+     * @since 1.15.0
+     */
+    public String[] getRequiredHeaders() {
+        return requiredHeaders != null ? requiredHeaders.clone() : null;
     }
 
     /**
@@ -2800,6 +2834,22 @@ public final class CSVFormat implements Serializable {
                             "The header contains a duplicate name: \"%s\" in %s. If this is valid then use CSVFormat.Builder.setDuplicateHeaderMode().", header,
                             Arrays.toString(headers)));
                 }
+            }
+        }
+        // Validate required headers
+        if (requiredHeaders != null && requiredHeaders.length > 0) {
+            final Set<String> requiredDupCheckSet = new HashSet<>(requiredHeaders.length);
+            for (final String requiredHeader : requiredHeaders) {
+                if (isBlank(requiredHeader)) {
+                    throw new IllegalArgumentException("RequiredHeaders contains a missing or blank name in " + Arrays.toString(requiredHeaders));
+                }
+                if (!requiredDupCheckSet.add(requiredHeader)) {
+                    throw new IllegalArgumentException(
+                            String.format("RequiredHeaders contains a duplicate name: \"%s\" in %s.", requiredHeader, Arrays.toString(requiredHeaders)));
+                }
+            }
+            if (headers == null) {
+                throw new IllegalArgumentException("Field requiredHeaders is set but field header is not set");
             }
         }
     }

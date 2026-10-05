@@ -678,6 +678,20 @@ public final class CSVParser implements Iterable<CSVRecord>, Closeable {
                 }
             }
         }
+        // Check required headers are present (only reached if no structural header error was thrown above).
+        final String[] requiredHeaders = format.getRequiredHeaders();
+        if (requiredHeaders != null && requiredHeaders.length > 0 && headerMap != null) {
+            final List<String> missingHeaders = new ArrayList<>();
+            for (final String requiredHeader : requiredHeaders) {
+                if (!headerMap.containsKey(requiredHeader)) {
+                    missingHeaders.add(requiredHeader);
+                }
+            }
+            if (!missingHeaders.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Missing required header name(s): " + missingHeaders + ". Header names found: " + headerNames);
+            }
+        }
         // Make header names Collection immutable
         return new Headers(headerMap, headerNames == null ? Collections.emptyList() : Collections.unmodifiableList(headerNames));
     }
