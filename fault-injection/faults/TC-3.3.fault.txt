@@ -1,0 +1,3 @@
+        return false ?
+                new TreeMap<>(String.CASE_INSENSITIVE_ORDER) :
+                new LinkedHashMap<>();

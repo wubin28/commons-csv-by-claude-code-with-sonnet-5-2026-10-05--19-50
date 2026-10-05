@@ -1,0 +1,1 @@
+                        headerMap.put(header, Integer.valueOf(i)); // Explicit boxing is intentional

@@ -1,0 +1,3 @@
+        return !format.getIgnoreHeaderCase() ?
+                new TreeMap<>(String.CASE_INSENSITIVE_ORDER) :
+                new LinkedHashMap<>();

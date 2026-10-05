@@ -1,0 +1,1 @@
+        if (requiredHeaders.length > 0 && headerMap != null) {

@@ -1,0 +1,2 @@
+                if (!headerMap.containsKey(requiredHeader)) {
+                    missingHeaders.add(requiredHeader);

@@ -1,0 +1,2 @@
+id	display_name	inject_result	revert_result
+TC-2.3a	TC-2.3a: 缺 1 个必需列	PASS_RED_WITH_EXPECTED_MESSAGE	PASS_GREEN_AFTER_REVERT
